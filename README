@@ -1,0 +1,32 @@
+Formula is a library for generating HTML5 forms and validating data.
+
+It subscribes to the MicroPHP Manifesto approach to doing things...
+
+
+Notes (organize):
+API:
+* Add Elements
+* Add elements hierarchially via fieldsets
+* Build
+* Validate
+
+It should:
+* Build a form
+* Export JSON representation of the form (for JS rendering)
+* Validate form data or arbitrary data
+* The form API can be used only for validation (not rendering)
+
+Elements:
+* Name
+* Type
+* Options
+* Default
+* Required
+* Validation
+* Style Classes
+* Custom Attributes
+* Description
+* Placeholder
+* After
+* Before
+* ..
