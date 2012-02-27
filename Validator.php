@@ -587,7 +587,15 @@ class Validator {
 	 */
 	public function is_exactly($str, $val) {
 		
-		if (strcmp($str, $val) == 0) {
+    if (is_array($str) OR is_object($str))
+      $str = serialize($str);
+    if (is_array($val) OR is_object($val))
+      $val = serialize($val);
+    
+    if (is_numeric($str) && is_numeric($val) && $val == $str) {
+      return TRUE;
+    }
+		elseif (( ! is_numeric($str) OR ! is_numeric($val)) && strcmp($str, $val) == 0) {
 			return TRUE;
 		}
 		else {
@@ -607,10 +615,23 @@ class Validator {
 	 * @return boolean
 	 */
 	public function is_exactly_case_insensitive($str, $val) {
-		
-		if (strcasecmp($str, $val) == 0) {
+    
+    //Check if can be cast to string and if they match
+    //@link http://stackoverflow.com/questions/5496656/check-if-item-can-be-converted-to-string
+    if((
+        ( ! is_array( $str ) ) &&
+        ( ( !is_object( $str ) && settype( $str, 'string' ) !== false ) ||
+        ( is_object( $str ) && method_exists( $str, '__toString' ) ) )
+    ) && (
+        ( ! is_array( $val ) ) &&
+        ( ( !is_object( $val ) && settype( $val, 'string' ) !== false ) ||
+        ( is_object( $val ) && method_exists( $val, '__toString' ) ) )
+    )
+    && strcasecmp($str, $val) == 0) {
 			return TRUE;
 		}
+    elseif ($this->is_exactly($str, $val))
+      return TRUE;
 		else {
 			$this->set_curr_message('is_exactly_case_insensitive', "The %s field must match '$val");
 			return FALSE;
@@ -626,13 +647,16 @@ class Validator {
 	 * If the string contains the value, return true, otherwise
 	 * return false
 	 *
-	 * @param string $str
+	 * @param string|array $str
 	 * @param string $val
 	 * @return boolean
 	 */
 	public function is_containing($str, $val)
-	{
-		if (strpos($str, $val) !== FALSE)
+	{    
+    if ((is_array($str) OR is_object($str)) && in_array($val, $str)) {
+      return TRUE;
+    }
+		elseif ( ! is_array($str) && ! is_object($str) && strpos((string) $str, (string) $val) !== FALSE)
 			return TRUE;
 		else
 		{

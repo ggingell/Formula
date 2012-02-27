@@ -176,13 +176,81 @@ class ValidatorTest extends PHPUnit_Framework_TestCase {
     $this->assertTrue($this->val->is_less_than(-2, -1));    
   }
   
-  public function testIsLessTahReturnsFalseForInvalidNumbers() {
+  public function testIsLessThanReturnsFalseForInvalidNumbers() {
     $this->assertFalse($this->val->is_less_than('16', 15));
     $this->assertFalse($this->val->is_less_than(18, '15'));
     $this->assertFalse($this->val->is_less_than(120.53, 120.529));    
     $this->assertFalse($this->val->is_less_than(-1, -2));     
   }
+
+  public function testIsGreaterThanReturnsTrueForValidNumbers() {
+    $this->assertTrue($this->val->is_greater_than('16', 15));
+    $this->assertTrue($this->val->is_greater_than(18, '15'));
+    $this->assertTrue($this->val->is_greater_than(120.53, 120.529));    
+    $this->assertTrue($this->val->is_greater_than(-1, -2));     
+    
+  }
   
+  public function testIsGreaterThanReturnsFalseForValidNumbers() {
+    
+    $this->assertFalse($this->val->is_greater_than('12', 15));
+    $this->assertFalse($this->val->is_greater_than(12, '15'));
+    $this->assertFalse($this->val->is_greater_than(120.53, 120.531));    
+    $this->assertFalse($this->val->is_greater_than(-2, -1));    
+    
+  }
+  
+  public function testIsExactlySucceedsForExactMatches() {
+    
+    $this->assertTrue($this->val->is_exactly(12, '12'));
+    $this->assertTrue($this->val->is_exactly(14.05, 14.05));
+    $this->assertTrue($this->val->is_exactly('abc 123', 'abc 123'));
+    $this->assertTrue($this->val->is_exactly(array(12, 34), array(12, 34)));
+    $this->assertTrue($this->val->is_exactly(TRUE, TRUE));
+    
+  }
+  
+  public function testIsExactlyFailsForNonExactMatches() {
+
+    $this->assertFalse($this->val->is_exactly(12, '12.1'));
+    $this->assertFalse($this->val->is_exactly(14.05, 14.04));
+    $this->assertFalse($this->val->is_exactly('abc 123', 'ABC 123'));
+    $this->assertFalse($this->val->is_exactly(array(12, 34), array(12, 35)));
+    $this->assertFalse($this->val->is_exactly(TRUE, FALSE));
+  }
+
+  public function testIsExactlyCaseInsensitiveSucceedsForExactMatches() {
+    
+    $this->assertTrue($this->val->is_exactly_case_insensitive(12, '12'));
+    $this->assertTrue($this->val->is_exactly_case_insensitive(14.05, 14.05));
+    $this->assertTrue($this->val->is_exactly_case_insensitive('abc 123', 'ABC 123'));
+    $this->assertTrue($this->val->is_exactly_case_insensitive(array(12, 34), array(12, 34)));
+    $this->assertTrue($this->val->is_exactly_case_insensitive(TRUE, TRUE));   
+  }
+  
+  public function testIsExactlyCaseInsensitiveFailsForNonExactMatches() {
+    
+    $this->assertFalse($this->val->is_exactly_case_insensitive(12, '12.1'));
+    $this->assertFalse($this->val->is_exactly_case_insensitive(14.05, 14.04));
+    $this->assertFalse($this->val->is_exactly_case_insensitive('abc 123', 'abd 123'));
+    $this->assertFalse($this->val->is_exactly_case_insensitive(array(12, 34), array(12, 35)));
+    $this->assertFalse($this->val->is_exactly_case_insensitive(TRUE, FALSE));
+    
+  }
+  
+  public function testIsContainingSucceedsForItemsThatContainValidValues() {
+    
+    $this->assertTrue($this->val->is_containing(123, 2));
+    $this->assertTrue($this->val->is_containing('abc', 'c'));
+    $this->assertTrue($this->val->is_containing(array('a', 'b', 'c'), 'b'));
+  }
+  
+  public function testIsContainingFailsForItemsThatContainValidValues() {
+
+    $this->assertFalse($this->val->is_containing(123, 4));
+    $this->assertFalse($this->val->is_containing('abc', 'd'));
+    $this->assertFalse($this->val->is_containing(array('a', 'b', 'c'), 'd'));    
+  }
 }
 
 /* EOF: ValidatorTest.php */
