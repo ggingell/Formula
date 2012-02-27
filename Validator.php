@@ -273,7 +273,7 @@ class Validator {
 		if (is_array($str) OR is_object($str) && count($str) > 0) {
 			return TRUE;
 		}
-		if ((bool) trim($str)) {
+		if (trim((string) $str) !== '') {
 			return TRUE;
 		}
 		else {
