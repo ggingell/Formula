@@ -133,8 +133,12 @@ class Validator {
 	public function validate($data_name, $data, $human_name = NULL, $rules = array()) {
 
 		//Set field context
-		$this->field_context = $data_name;
-
+		$this->field_context = (object) array(
+      'data_name' => $data_name,
+      'data' => $data,
+      'human_name' => $human_name
+    );
+    
 		//Run rules...
 		foreach($rules as $rule) {
 			$result = $this->run_rule($rule, $data);
@@ -208,14 +212,14 @@ class Validator {
 
 		//Extract the function and the arguments
 		$function = (isset($matches[1])) ? $matches[1] : FALSE;
-		
+    
 		$args = (isset($matches[3])) ? $matches[3] : '';
 		$args = array_filter(array_map('trim', explode(',', $args)));
 		array_unshift($args, $value);
 
 		//Set Context
 		$this->rule_context = $function;
-
+    
 		//Run it
 		if (method_exists($this, $function))
 			$result = call_user_func_array(array($this, $function), $args);
@@ -248,10 +252,10 @@ class Validator {
 		if ($this->rule_context && $rule_name !== $this->rule_context)
 			return;
 
-		$human_name = $this->validation_rules[$this->field_context]->human_name;
+		$human_name = $this->field_context->human_name;
 		$message = sprintf($message, $human_name);
 
-		$this->error_messages[$this->field_context][] = $message;
+		$this->error_messages[$this->field_context->data_name][] = $message;
 	}
 
 	// -----------------------------------------------------------
@@ -318,6 +322,7 @@ class Validator {
 		}
 		else {
 			$this->set_curr_message('is_integer', "%s must be an integer!");
+      return FALSE;
 		}
 
 	}
@@ -398,7 +403,7 @@ class Validator {
 	 */
 	public function is_valid_ip($str) {
 
-		if ($this->is_valid_ipv4($str) && $this->is_valid_ipv6($str)) {
+		if ($this->is_valid_ipv4($str) OR $this->is_valid_ipv6($str)) {
 			return TRUE;
 		} else {
 			$this->set_curr_message('is_valid_ip', "%s must be a valid IPv4 or IPv6 address!");
@@ -419,7 +424,7 @@ class Validator {
 
 		$hostname_regex = "/^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/";
 
-		if ($this->is_valid_ip($str) && preg_match($hostname_regex, $str)) {
+		if ($this->is_valid_ip($str) OR preg_match($hostname_regex, $str)) {
 			return TRUE;
 		}
 		else {
@@ -460,11 +465,11 @@ class Validator {
 	public function is_public_ip($str) {
 		
 
-		if ((bool) filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE, FILTER_FLAG_NO_PRIV_RANGE)) {
+		if ((bool) filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE|FILTER_FLAG_NO_PRIV_RANGE)) {
 			return TRUE;
 		}
 		else {
-			$this->set_curr_message('is_public_ip', "%s must be a public IPv4 Address!");
+			$this->set_curr_message('is_public_ip', "%s must be a public Address!");
 			return FALSE;
 		}
 	}
