@@ -109,7 +109,7 @@ class Form {
   
   /**
    * Get validation messages
-   *
+   * 
    * Returns NULL or EMPTY array if no validation has yet occured.
    * 
    * @param int $format

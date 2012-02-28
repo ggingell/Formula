@@ -65,7 +65,7 @@ class Validator {
 	 * @param string $human_name  A human name for the field
 	 * @param string|array $rules  Rules, separated by pipes ("|"), or an array of them
 	 */
-	public function set_rules($data_name, $data, $human_name = NULL, $rules = NULL) {
+	public function set_rules($data_name, $data, $human_name, $rules) {
 
 		$rule = (object) array(
 			'name'       => $data_name,
@@ -79,7 +79,8 @@ class Validator {
 	
 	// -----------------------------------------------------------
   
-  public function add_rules($data_name, $rules = NULL) {
+  //Do we need this?
+  /*public function add_rules($data_name, $rules = NULL) {
     
     if ( ! is_array($rules))
       $rules = explode("|", $rules);
@@ -91,7 +92,7 @@ class Validator {
       foreach($rules as $rule)
         $this->validation_rules[$data_name]->rules[] = $rule;
     }
-  }
+  }*/
   
 	// -----------------------------------------------------------
 
@@ -130,7 +131,7 @@ class Validator {
 	 * @param array $rules  Rules array
 	 * @return boolean  Whether validation succeeded or not
 	 */
-	public function validate($data_name, $data, $human_name = NULL, $rules = array()) {
+	public function validate($data_name, $data, $human_name, $rules) {
 
 		//Set field context
 		$this->field_context = (object) array(
@@ -139,15 +140,20 @@ class Validator {
       'human_name' => $human_name
     );
     
+    //Set succeed/fail flag
+    $success = TRUE;    
+        
 		//Run rules...
 		foreach($rules as $rule) {
-			$result = $this->run_rule($rule, $data);
+            
+      if ( ! $this->run_rule($rule, $data))
+        $success = FALSE;      
 		}
 
 		//Clear field context
 		$this->field_context = NULL;
-
-		return $result;
+    
+		return $success;
 	}
 
 	// -----------------------------------------------------------
@@ -163,7 +169,7 @@ class Validator {
 	 * @return array  An array of error messages (empty if no errors were encountered)
 	 */
 	public function get_error_messages($linear = FALSE) {
-
+    
 		if ($linear) {
 
 			$out_msgs = array();
@@ -254,8 +260,9 @@ class Validator {
 
 		$human_name = $this->field_context->human_name;
 		$message = sprintf($message, $human_name);
-
-		$this->error_messages[$this->field_context->data_name][] = $message;
+    $data_name = $this->field_context->data_name;
+    
+		$this->error_messages[$data_name][] = $message;
 	}
 
 	// -----------------------------------------------------------
@@ -664,7 +671,70 @@ class Validator {
 			return FALSE;
 		}
 	}
+  
+	// -----------------------------------------------------------
+  
+  /**
+   * Checks to see if a string is alphanumeric
+   *
+   * @param string $str 
+   * @return boolean
+   */
+  public function is_alphanumeric($str) {
 
+    if (preg_match("/^([a-zA-Z0-9]+)$/", $str) > 0)
+      return TRUE;
+    else
+    {
+      $this->set_curr_message('is_alphanumeric', "The %s field contains invalid characters");
+      return FALSE;
+    }
+    
+  }
+  
+	// -----------------------------------------------------------
+
+  /**
+   * Checks to see if a string is alphanumeric
+   * 
+   * dashes and underscores allowed
+   *
+   * @param string $str 
+   * @return boolean
+   */  
+  public function is_alphanumdash($str) {
+
+    if (preg_match("/^([a-zA-Z0-9_-]+)$/", $str) > 0)
+      return TRUE;
+    else
+    {
+      $this->set_curr_message('is_alphanumdash', "The %s field contains invalid characters");
+      return FALSE;
+    }    
+    
+  }
+  
+	// -----------------------------------------------------------
+  
+  /**
+   * Checks to see if a string is alphanumeric
+   * 
+   * dashes, underscores, and spaces allowed
+   *
+   * @param string $str 
+   * @return boolean
+   */    
+  public function is_alphanumdashspace($str) {
+ 
+    if (preg_match("/^([a-zA-Z0-9 _\-]+)$/", $str) > 0)
+      return TRUE;
+    else
+    {
+      $this->set_curr_message('is_alphanumdashspace', "The %s field contains invalid characters");
+      return FALSE;
+    }
+  }
+  
 }
 
 /* EOF: validator.php */
