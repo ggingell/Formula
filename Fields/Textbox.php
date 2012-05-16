@@ -2,7 +2,7 @@
 
 namespace Formula\Fields;
 
-class TextBox extends Abstracts\OpenEndedInput {
+class Textbox extends Abstracts\OpenEndedInput {
   
   protected function render() {
     
@@ -16,12 +16,14 @@ class TextBox extends Abstracts\OpenEndedInput {
       $tfValue = $this->defaultValue;
     if ($this->_data)
       $tfValue = $this->_data;
+    else
+      $tfValue = '';
     
     if ($this->placeholder)
       $attrs['placeholder'] = $this->placeholder;
          
     $label_html = "<label for='{$this->id}'>{$this->label}</label>";
-    $item_html = "<textarea ". $this->renderAttrs($attrs) .">" . $tfValue . "</textfield>";
+    $item_html = "<textarea ". $this->renderAttrs($attrs) .">" . $tfValue . "</textarea>";
     
     return "$label_html $item_html";
   }

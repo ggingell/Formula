@@ -15,46 +15,70 @@ class Form {
   const AS_STRING = 3;
   
   /**
+   * @var Validator  Static Instance
+   */
+  public static $validator;
+
+  /**
    * Form Name/Identifer
    */
-  public $name;
+  protected $name;
   
   /**
    * Form data
    * @var array 
    */
-  public $data;
+  protected $data;
+  
+  // -----------------------------------------------------------
   
   /**
-   * Validator
-   * @var Validator
+   * Constructor
+   *
+   * @param string $name
+   * @param Validator $validator
    */
-  private $validator;
-  
-	// -----------------------------------------------------------
-  
-  public function __construct(Validator $validator, $name = 'form') {
+  public function __construct($name = 'form', Validator $validator = NULL) {
 
-    //Inject validator dependency
-    $this->validator = $validator;
+    //Inject static validator dependency
+    if ($validator) {
+      self::$validator = $validator;
+    }
 
     //Set name
     $this->name = $name;
+
+    //Initialize data
+    $this->data = new \stdClass();
   }
   
-	// -----------------------------------------------------------
-  
-  /**
-   * Return the form as a JSON object
-   * 
-   * @return string 
-   */
-  public function toJson() {
-    
+  // -----------------------------------------------------------
+ 
+  public function __set($item, $val) {
+
+    if ($val instanceOf Fields\Abstracts\Field) {
+      $this->data->$item = $val;
+    }
+    else {
+      throw new \InvalidArgumentException("$item is not a valid Fieldtype object!");
+    }
+
   }
+
+  // -----------------------------------------------------------
   
-	// -----------------------------------------------------------
-  
+  public function __get($item) {
+
+    if ($item == 'name') {
+      return $this->name;
+    }
+    else {
+      return $this->data->$item;
+    }
+  }
+
+  // -----------------------------------------------------------
+
   /**
    * Magic Method to get the JSON for the form
    * 
@@ -66,18 +90,69 @@ class Form {
     
   }
   
-	// -----------------------------------------------------------
+  // -----------------------------------------------------------
+  
+  /**
+   * Return the form as a JSON object
+   * 
+   * @return string 
+   */
+  public function toJson() {
+    
+  }
+
+  // -----------------------------------------------------------
   
   /**
    * Render the form
    * 
+   * @param string|boolean|null $action
+   * If FALSE, will not print the form header.  If NULL, the action will be blank.  Or, put a string in.
+   *
+   * @param string $method
+   * No validation here, but it should be GET or POST (or lowercase get/post)
+   *
+   * @param array $attrs
+   * Key/value attributes in addition to 'action' and 'method' (optional)
+   *
    * @return string 
    */
-  public function render() {
+  public function render($action = NULL, $method = 'POST', $attrs = array()) {
     
+    $hasFiles = FALSE;
+
+    //Add children
+    $html = '';
+    foreach($this->data as $obj) {
+
+      $html .= $obj->asHtml();
+
+      if ($obj instanceof Fields\File) {
+        $hasFiles = TRUE;
+      }
+      
+    }
+
+    //Add <form>...</form> tags
+    if ($action !== FALSE) {
+
+      $attributes = array();
+      $attributes['action'] = $action ?: '';
+      $attributes['method'] = strtolower($method ?: 'POST');
+      $attributes['enctype'] = ($hasFiles) ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
+      $attrs = array_merge($attributes, $attrs);
+      foreach($attrs as $key => &$val) {
+        $val = "$key='$val'";
+      }
+      $attrs = implode(' ', $attrs);
+
+      $html = "<form {$attrs}>" . $html . "</form>";      
+    }
+
+    return $html;
   }
   
-	// -----------------------------------------------------------
+  // -----------------------------------------------------------
   
   /**
    * Validate a single field or the entire form
@@ -88,6 +163,10 @@ class Form {
    */
   public function validate($fieldName = NULL, $returnValidationMsgs = FALSE) {
     
+    if ( ! isset($this->validator)) {
+      throw new RuntimeException("No validator set!");
+    }
+
     if ($fieldName && ! isset($this->data[$fieldName]))
       throw new Exception("The Field $fieldName is not defined and cannot be valdiated.");
     
@@ -120,6 +199,10 @@ class Form {
    */
   public function getValidationMessages($format = self::AS_ARRAY) {
     
+    if ( ! isset($this->validator)) {
+      throw new RuntimeException("No validator set!");
+    }
+
     switch($format) {
       
       case self::AS_ARRAY:
