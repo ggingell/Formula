@@ -33,10 +33,13 @@ class Form {
   
 	// -----------------------------------------------------------
   
-  public function __construct(Validator $validator) {
-    
+  public function __construct(Validator $validator, $name = 'form') {
+
+    //Inject validator dependency
     $this->validator = $validator;
-    
+
+    //Set name
+    $this->name = $name;
   }
   
 	// -----------------------------------------------------------
@@ -46,7 +49,7 @@ class Form {
    * 
    * @return string 
    */
-  public function to_json() {
+  public function toJson() {
     
   }
   
@@ -59,7 +62,7 @@ class Form {
    */
   public function __toString() {
     
-    return $this->to_json();
+    return $this->toJson();
     
   }
   
@@ -79,21 +82,21 @@ class Form {
   /**
    * Validate a single field or the entire form
    * 
-   * @param string $field_name   If NULL, the entire form will be validated
-   * @param int $return_validation_messages  Set to return validation messages
+   * @param string $fieldName   If NULL, the entire form will be validated
+   * @param int $returnValidationMsgs  Set to return validation messages
    * @return boolean
    */
-  public function validate($field_name = NULL, $return_validation_msgs = FALSE) {
+  public function validate($fieldName = NULL, $returnValidationMsgs = FALSE) {
     
-    if ($field_name && ! isset($this->data[$field_name]))
-      throw new Exception("The Field $field_name is not defined and cannot be valdiated.");
+    if ($fieldName && ! isset($this->data[$fieldName]))
+      throw new Exception("The Field $fieldName is not defined and cannot be valdiated.");
     
-    $to_validate = ($field_name) ? array($this->data['field_name']) : $this->data;
+    $toValidate = ($fieldName) ? array($this->data['fieldName']) : $this->data;
     
     //Flag - TRUE until we run across a bad field
     $result = TRUE;
     
-    foreach($to_validate as $fname => $fdata) {
+    foreach($toValidate as $fname => $fdata) {
 
       //Get the custom validation settings for the field type
       //and add those to the custom field validation rules
@@ -102,7 +105,7 @@ class Form {
       
     }
     
-    return ($return_validation_msgs) ? $this->get_validation_messages($return_validation_msgs) : $result;
+    return ($returnValidationMsgs) ? $this->getValidationMessages($returnValidationMsgs) : $result;
   }
   
   // -----------------------------------------------------------
@@ -115,7 +118,7 @@ class Form {
    * @param int $format
    * @return string|array
    */
-  public function get_validation_messages($format = self::AS_ARRAY) {
+  public function getValidationMessages($format = self::AS_ARRAY) {
     
     switch($format) {
       

@@ -55,7 +55,7 @@ abstract class Field {
    * Form ID
    * @var string 
    */
-  public $form_id = 'form';
+  public $formId = 'form';
   
 	// -----------------------------------------------------------
   
@@ -72,14 +72,14 @@ abstract class Field {
    * 
    * @param array|string $data  Typically, existing 
    */
-  public function __construct($name, $data = NULL, $form_id = 'form') {
+  public function __construct($name, $data = NULL, $formId = 'form') {
     
-    $this->type    = strtolower(__CLASS__);
+    $this->type    = strtolower(get_called_class());
     $this->name    = $name;
     $this->_data   = $data;
-    $this->form_id = $form_id;
+    $this->formId = $formId;
     
-    $this->id = $form_id . '_' . $name;
+    $this->id = $formId . '_' . $name;
   }
   
   // ------------------------------------------------------------
@@ -92,10 +92,9 @@ abstract class Field {
   /**
    * Render the field as HTML
    * 
-   * @param string $html  Optionally, manually enter HTML to use
    * @return string
    */
-  public function as_html() {
+  public function asHtml() {
     
     $html = $this->render();
     
@@ -103,7 +102,7 @@ abstract class Field {
     $after = $this->after ? "<span class='after'>$this->after</span>" : NULL;
     
     $html = $before . $html . $after;
-    $html = "<div class='{$this->form_id}_{$this->name}'>" . $html . "</div>";
+    $html = "<div class='{$this->formId}_{$this->name}'>" . $html . "</div>";
     return $html;
   }
   
@@ -114,28 +113,12 @@ abstract class Field {
    * 
    * @return string
    */
-  public function as_json() {
+  public function asJson() {
     
     $obj = clone $this;
     unset($obj->_data);
     return $obj;
     
-  }
-  
-  // ------------------------------------------------------------
-  
-  /**
-   * Get Validation Rules
-   * 
-   * @throws RuntimeException 
-   * @return array;
-   */
-  public function get_validation_rules() {
-    
-    if ( ! isset($this->validation_rules))
-      throw new RuntimeException("Cannot get validation Rules for non-input field!");
-    
-    return array();
   }
   
   // ------------------------------------------------------------
@@ -158,7 +141,7 @@ abstract class Field {
    * 
    * @return array
    */
-  protected function get_attrs() {
+  protected function getAttrs() {
     
     return ( ! is_array($this->attrs)) ? explode(" ", $this->attrs) : $this->attrs;
     
@@ -166,7 +149,7 @@ abstract class Field {
   
   // ------------------------------------------------------------
  
-  protected function render_attrs($attrs) {
+  protected function renderAttrs($attrs) {
     
     if (is_array($attrs)) {
       $attrs = array_filter($attrs);

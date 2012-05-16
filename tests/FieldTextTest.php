@@ -28,7 +28,7 @@ class FieldTextTest extends PHPUnit_Framework_TestCase {
   public function testRenderProducesExpectedHTMLSegments() {
     
     $textfield = new \Formula\Fields\Text('test', NULL, 'formy');
-    $textfield = $textfield->as_html();
+    $textfield = $textfield->asHtml();
     
     $this->assertContains("type='text'", $textfield);
     $this->assertContains("<input", $textfield);

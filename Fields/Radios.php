@@ -6,7 +6,7 @@ class Radios extends Abstracts\Input {
   
   protected function render() {
     
-    $attrs = $this->get_attrs();
+    $attrs = $this->getAttrs();
     $attrs['name'] = $this->name;
     $attrs['type'] = 'text';
     $attrs['class'] = $this->classes;
@@ -21,13 +21,11 @@ class Radios extends Abstracts\Input {
       $attrs['placeholder'] = $this->placeholder;
          
     $label_html = "<label for='{$this->id}'>{$this->label}</label>";
-    $item_html = "<input ". $this->render_attrs($attrs) ." />";
+    $item_html = "<input ". $this->renderAttrs($attrs) ." />";
     
     return "$label_html $item_html";
   }
   
 }
-
-/* EOF: Text.php */
 
 /* EOF: Radios.php */

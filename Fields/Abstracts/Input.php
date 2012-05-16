@@ -7,15 +7,25 @@ abstract class Input extends Field {
   /**
    * @var string
    */
-  public $validation_rules;
+  public $validationRules;
   
   /**
    * @var string
    */
-  public $default_value;
+  public $defaultValue;
 
   // -----------------------------------------------------------
-  
+
+  /**
+   * Get Validation Rules
+   * 
+   * @throws RuntimeException 
+   * @return array;
+   */
+  public function getValidationRules() {
+ 
+    return $this->validationRules();
+  }
 }
 
 /* EOF: Input.php */
