@@ -2,9 +2,11 @@
 
 namespace Formula\Fields\Abstracts;
 
-class MultipleChoiceInput extends Input {
+abstract class MultipleChoiceInput extends Input {
 
 	/**
+	 * Associative array
+	 *
 	 * @var array
 	 */
 	public $options;
@@ -17,7 +19,16 @@ class MultipleChoiceInput extends Input {
 	/**
 	 * @var string
 	 */
-	public $otherLabel;
+	public $otherLabel = 'Other';
+
+	/**
+	 * If TRUE, array keys in the $options will not be used
+	 * when submitting the form
+	 *
+	 * @var boolean
+	 */
+	public $useValues = FALSE;
+
 }
 
 /* EOF: MultipleChoiceInput.php */
