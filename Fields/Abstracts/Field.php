@@ -60,14 +60,6 @@ abstract class Field {
 	// -----------------------------------------------------------
 
   /**
-   * Data for rendering the field
-   * @var array|string
-   */
-  protected $_data = NULL;
-
-	// -----------------------------------------------------------
-
-  /**
    * Constructor
    *
    * @param array|string $data  Typically, existing
@@ -76,7 +68,6 @@ abstract class Field {
 
     $this->type    = strtolower(get_called_class());
     $this->name    = $name;
-    $this->_data   = $data;
     $this->formId = $formId;
 
     $this->id = $formId . '_' . $name;

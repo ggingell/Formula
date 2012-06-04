@@ -20,9 +20,19 @@ class Form {
   public static $validator;
 
   /**
+   * @var Validator
+   */
+  protected $val;
+
+  /**
    * Form Name/Identifer
    */
   protected $name;
+
+  /**
+   * Individual Errors
+   */
+  protected $renderIndividualErrors = TRUE;
 
   /**
    * Form data
@@ -41,8 +51,8 @@ class Form {
   public function __construct($name = 'form', Validator $validator = NULL) {
 
     //Inject static validator dependency
-    if ($validator) {
-      self::$validator = $validator;
+    if ( ! $validator) {
+      $this->val = $validator ?: clone self::$validator;
     }
 
     //Set name
@@ -57,6 +67,11 @@ class Form {
   public function __set($item, $val) {
 
     if ($val instanceOf Fields\Abstracts\Field) {
+
+      if ($val instanceOf Fields\Abstracts\Input && isset($_POST[$val->name])) {
+        $val->setData($_POST[$val->name]);
+      }
+
       $this->data->$item = $val;
     }
     else {
@@ -99,6 +114,21 @@ class Form {
    */
   public function toJson() {
 
+    $out = new \stdClass();
+    $out->name = $this->name;
+    $out->fields = $this->data;
+    return json_encode($out);
+  }
+
+  // -----------------------------------------------------------
+
+  /**
+   * Turn individual error output on or off in the HTML of the form
+   *
+   * @param boolean $val
+   */
+  public function renderIndividualErrors($val) {
+    $this->renderIndividualErrors = (boolean) $val;
   }
 
   // -----------------------------------------------------------
@@ -121,9 +151,16 @@ class Form {
 
     $hasFiles = FALSE;
 
+    //Add hidden properties -- @TODO: Add optional CSRF as value
+    $html = "<input type='hidden' name='{$this->name}_token' id='{$this->name}_token' value='submitted' />";
+
     //Add children
-    $html = '';
     foreach($this->data as $obj) {
+
+      //Turn off individual validation errors in output?
+      if ( ! $this->renderIndividualErrors && isset($obj->renderValidationErrors)) {
+        $obj->renderValidationErrors = FALSE;
+      }
 
       $html .= $obj->asHtml();
 
@@ -158,34 +195,53 @@ class Form {
   /**
    * Validate a single field or the entire form
    *
-   * @param string $fieldName   If NULL, the entire form will be validated
-   * @param int $returnValidationMsgs  Set to return validation messages
+   * @param string $fieldName
+   * If NULL, the entire form will be validated
+   *
    * @return boolean
    */
-  public function validate($fieldName = NULL, $returnValidationMsgs = FALSE) {
+  public function validate($fieldName = NULL) {
 
-    if ( ! isset($this->validator)) {
-      throw new RuntimeException("No validator set!");
+    if ( ! isset($this->val)) {
+      throw new \RuntimeException("No validator set!");
     }
 
     if ($fieldName && ! isset($this->data[$fieldName]))
-      throw new Exception("The Field $fieldName is not defined and cannot be valdiated.");
+      throw new \Exception("The Field $fieldName is not defined and cannot be validated.");
 
     $toValidate = ($fieldName) ? array($this->data['fieldName']) : $this->data;
 
     //Flag - TRUE until we run across a bad field
     $result = TRUE;
 
-    foreach($toValidate as $fname => $fdata) {
+    //Add all fields to validation object
+    foreach($toValidate as $fkey => $field) {
 
-      //Get the custom validation settings for the field type
-      //and add those to the custom field validation rules
+      //Ignore form submitted CSRF hidden
+      if (strcmp($this->name . '_token', $fkey) == 0) {
+        continue;
+      }
 
-      //Run all validations
-
+      if ($field instanceof Fields\Abstracts\Input) {
+        $valLabel = $field->validationLabel ?: $field->label;
+        $this->val->set_post_rules($field->name, $valLabel, $field->validation);
+      }
     }
 
-    return ($returnValidationMsgs) ? $this->getValidationMessages($returnValidationMsgs) : $result;
+    //Run it!
+    $result = $this->val->run();
+    $valErrors = $this->val->get_error_messages();
+
+    //Update the field validation errors
+    foreach($toValidate as $fkey => $field) {
+      if (isset($valErrors[$field->name])) {
+
+        $this->data->$fkey->validationErrors = $valErrors[$field->name];
+
+      }
+    }
+
+    return $result;
   }
 
   // -----------------------------------------------------------
@@ -200,29 +256,51 @@ class Form {
    */
   public function getValidationMessages($format = self::AS_ARRAY) {
 
-    if ( ! isset($this->validator)) {
+    if ( ! isset($this->val)) {
       throw new RuntimeException("No validator set!");
     }
 
     switch($format) {
 
       case self::AS_ARRAY:
-        //do stuff
+        return $this->val->get_error_messages(TRUE);
       break;
 
 
       case self::AS_ARRAY_BY_FIELD:
-        //do stuff
+        return $this->val->get_error_messages(FALSE);
       break;
 
 
       case self::AS_STRING:
       default:
-        //do stuff
+
+        $msgs = array();
+        foreach($this->val->get_error_messages(TRUE) as $msg) {
+          $msgs[] = sprintf("<li class='validation_error'>%s</li>", $msg);
+        }
+        $msgs = sprintf("<ul class='validation_errors'>%s</ul>", implode("\n", $msgs));
+
       break;
     }
 
     return $msgs;
+  }
+
+  // -----------------------------------------------------------
+
+  /**
+   * Check if this form was submitted
+   *
+   * @return boolean
+   * Returns TRUE if this form was submitted, FALSE otherwise
+   */
+  public function wasSubmitted() {
+
+    //TODO: Add CSRF check (optional)
+    $key = $this->name . '_token';
+    return (isset($_POST[$key]));
+
   }
 
 }

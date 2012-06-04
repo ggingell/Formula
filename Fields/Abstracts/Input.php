@@ -5,9 +5,14 @@ namespace Formula\Fields\Abstracts;
 abstract class Input extends Field {
 
   /**
-   * @var array
+   * @var array  Validation Rules
    */
-  public $validationRules = array();
+  public $validation = array();
+
+  /**
+   * @var string  An optional alternative label to use for validation
+   */
+  public $validationLabel = NULL;
 
   /**
    * @var string
@@ -19,6 +24,35 @@ abstract class Input extends Field {
    */
   public $validationErrors = array();
 
+  /**
+   * @var boolean
+   */
+  public $refill = TRUE;
+
+  /**
+   * @var boolean
+   */
+  public $renderValidationErrors = TRUE;
+
+  // -----------------------------------------------------------
+
+  /**
+   * Data for rendering the field
+   * @var array|string
+   */
+  protected $_data = NULL;
+
+  // -----------------------------------------------------------
+
+  /**
+   * Set the data for this field input
+   *
+   * @param mixed $data
+   */
+  public function setData($data) {
+    $this->_data = $data;
+  }
+
   // -----------------------------------------------------------
 
   /**
@@ -28,7 +62,7 @@ abstract class Input extends Field {
    */
   public function asHtml() {
 
-    if (count($this->validationErrors) > 0) {
+    if (count($this->validationErrors) > 0 && $this->renderValidationErrors) {
       $class = 'input_error';
 
       $valErrorHtml = "";
@@ -44,19 +78,6 @@ abstract class Input extends Field {
 
     return parent::asHtml($class);
 
-  }
-
-  // -----------------------------------------------------------
-
-  /**
-   * Get Validation Rules
-   *
-   * @throws RuntimeException
-   * @return array;
-   */
-  public function getValidationRules() {
-
-    return $this->validationRules;
   }
 }
 

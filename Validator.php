@@ -6,7 +6,7 @@ namespace Formula;
  * Validator Class
  *
  * For validationg forms and arbitrary data
- * 
+ *
  * @package Formula
  * @author Casey McLaughlin
  */
@@ -14,7 +14,7 @@ class Validator {
 
 	/**
 	 * Validation rules
-	 * 
+	 *
 	 * @var array
 	 */
 	private $validation_rules = array();
@@ -51,7 +51,7 @@ class Validator {
 	public function set_post_rules($field, $human_name, $rules) {
 
 		$data_val = (isset($_POST[$field])) ? $_POST[$field] : NULL;
-		$this->set_rules($field, $_POST[$field], $human_name, $rules);
+		$this->set_rules($field, $data_val, $human_name, $rules);
 
 	}
 
@@ -59,7 +59,7 @@ class Validator {
 
 	/**
 	 * Set rules for arbitrary data
-	 * 
+	 *
 	 * @param string $data_name  A machine name (slug) for the data
 	 * @param mixed $data  The data to be validated
 	 * @param string $human_name  A human name for the field
@@ -76,16 +76,16 @@ class Validator {
 
 		$this->validation_rules[$data_name] = $rule;
 	}
-	
+
 	// -----------------------------------------------------------
-  
+
   //Do we need this?
   /*public function add_rules($data_name, $rules = NULL) {
-    
+
     if ( ! is_array($rules))
       $rules = explode("|", $rules);
-      
-    
+
+
     if ( ! isset($this->validation_rules[$data_name]))
       throw new RuntimeException("Data $data_name not defined in Validator.  Use set_rules method before running add_rules");
     else {
@@ -93,7 +93,7 @@ class Validator {
         $this->validation_rules[$data_name]->rules[] = $rule;
     }
   }*/
-  
+
 	// -----------------------------------------------------------
 
 	/**
@@ -124,7 +124,7 @@ class Validator {
 
 	/**
 	 * Validate a single item
-	 * 
+	 *
 	 * @param string $data_name  A machine name (slug) for the data
 	 * @param mixed $data  The data to be validated
 	 * @param string $human_name  A human name for the field
@@ -139,20 +139,20 @@ class Validator {
       'data' => $data,
       'human_name' => $human_name
     );
-    
+
     //Set succeed/fail flag
-    $success = TRUE;    
-        
+    $success = TRUE;
+
 		//Run rules...
 		foreach($rules as $rule) {
-            
+
       if ( ! $this->run_rule($rule, $data))
-        $success = FALSE;      
+        $success = FALSE;
 		}
 
 		//Clear field context
 		$this->field_context = NULL;
-    
+
 		return $success;
 	}
 
@@ -166,10 +166,19 @@ class Validator {
 	 * array keys as data field names.
 	 *
 	 * @param boolean $linear
+	 * @param boolean $filter_is_required
 	 * @return array  An array of error messages (empty if no errors were encountered)
 	 */
-	public function get_error_messages($linear = FALSE) {
-    
+	public function get_error_messages($linear = FALSE, $filter_is_required = TRUE) {
+
+		if ($filter_is_required) {
+			foreach($this->error_messages as &$field) {
+				if (isset($field['is_required'])) {
+					$field = array('is_required' => $field['is_required']);
+				}
+			}
+		}
+
 		if ($linear) {
 
 			$out_msgs = array();
@@ -190,7 +199,7 @@ class Validator {
 
 	/**
 	 * Get validation errors for a single field
-	 * 
+	 *
 	 * @param string $field
 	 * @return array  Empty if there were no validation errors for the field
 	 */
@@ -202,10 +211,10 @@ class Validator {
 
 	/**
 	 * Run Rule
-	 * 
+	 *
 	 * @param string $rule
 	 * A single rule
-	 * 
+	 *
 	 * @return boolean|mixed
 	 * If TRUE, validation succeeded
 	 * If FALSE, validation failed
@@ -218,14 +227,14 @@ class Validator {
 
 		//Extract the function and the arguments
 		$function = (isset($matches[1])) ? $matches[1] : FALSE;
-    
+
 		$args = (isset($matches[3])) ? $matches[3] : '';
 		$args = array_filter(array_map('trim', explode(',', $args)));
 		array_unshift($args, $value);
 
 		//Set Context
 		$this->rule_context = $function;
-    
+
 		//Run it
 		if (method_exists($this, $function))
 			$result = call_user_func_array(array($this, $function), $args);
@@ -244,7 +253,7 @@ class Validator {
 
 	/**
 	 * Set current message for an error
-	 * 
+	 *
 	 * @param string $rule_name  The rule name to apply the message to
 	 * @param string $message  The message
 	 */
@@ -261,8 +270,8 @@ class Validator {
 		$human_name = $this->field_context->human_name;
 		$message = sprintf($message, $human_name);
     $data_name = $this->field_context->data_name;
-    
-		$this->error_messages[$data_name][] = $message;
+
+		$this->error_messages[$data_name][$rule_name] = $message;
 	}
 
 	// -----------------------------------------------------------
@@ -270,7 +279,7 @@ class Validator {
 	/*
 	 * Data Validation Checks (always start with 'is_')
 	 */
-	
+
 	// -----------------------------------------------------------
 
 	/**
@@ -298,11 +307,11 @@ class Validator {
 
 	/**
 	 * Check if a value is numeric
-	 * 
+	 *
 	 * @param string|int|float $str
 	 * @return boolean
 	 */
-	public function is_numeric($str) {		
+	public function is_numeric($str) {
 
 		if (is_numeric($str)) {
 			return TRUE;
@@ -333,7 +342,7 @@ class Validator {
 		}
 
 	}
-	
+
 	// -----------------------------------------------------------
 
 	/**
@@ -359,7 +368,7 @@ class Validator {
 
 	/**
 	 * Check if is one of several values
-	 * 
+	 *
 	 * @param string $str
 	 * @param string|array $vals  If string, separate with ';' character
 	 * @return boolean
@@ -446,7 +455,7 @@ class Validator {
 
 	/**
 	 * Check if string contains valid IPv4 address
-	 * 
+	 *
 	 * @param string $str
 	 * @return boolean
 	 */
@@ -465,12 +474,12 @@ class Validator {
 
 	/**
 	 * Check if string contains valid public IPv4 address
-	 * 
+	 *
 	 * @param string $str
 	 * @return boolean
 	 */
 	public function is_public_ip($str) {
-		
+
 
 		if ((bool) filter_var($str, FILTER_VALIDATE_IP, FILTER_FLAG_NO_RES_RANGE|FILTER_FLAG_NO_PRIV_RANGE)) {
 			return TRUE;
@@ -480,12 +489,12 @@ class Validator {
 			return FALSE;
 		}
 	}
-	
+
 	// -----------------------------------------------------------
 
 	/**
 	 * Check if string contains valid IPv6 address
-	 * 
+	 *
 	 * @param string $str
 	 * @return boolean
 	 */
@@ -540,9 +549,9 @@ class Validator {
 			$this->set_curr_message('is_greater_than', "%s must be greater than " . number_format((float) $str, $decs));
 			return FALSE;
 		}
-		
+
 	}
-	
+
 	// -----------------------------------------------------------
 
 	/**
@@ -582,7 +591,7 @@ class Validator {
 			return FALSE;
 		}
 	}
-	
+
 	// -----------------------------------------------------------
 
 	/**
@@ -593,12 +602,12 @@ class Validator {
 	 * @return boolean
 	 */
 	public function is_exactly($str, $val) {
-		
+
     if (is_array($str) OR is_object($str))
       $str = serialize($str);
     if (is_array($val) OR is_object($val))
       $val = serialize($val);
-    
+
     if (is_numeric($str) && is_numeric($val) && $val == $str) {
       return TRUE;
     }
@@ -622,7 +631,7 @@ class Validator {
 	 * @return boolean
 	 */
 	public function is_exactly_case_insensitive($str, $val) {
-    
+
     //Check if can be cast to string and if they match
     //@link http://stackoverflow.com/questions/5496656/check-if-item-can-be-converted-to-string
     if((
@@ -659,7 +668,7 @@ class Validator {
 	 * @return boolean
 	 */
 	public function is_containing($str, $val)
-	{    
+	{
     if ((is_array($str) OR is_object($str)) && in_array($val, $str)) {
       return TRUE;
     }
@@ -671,13 +680,13 @@ class Validator {
 			return FALSE;
 		}
 	}
-  
+
 	// -----------------------------------------------------------
-  
+
   /**
    * Checks to see if a string is alphanumeric
    *
-   * @param string $str 
+   * @param string $str
    * @return boolean
    */
   public function is_alphanumeric($str) {
@@ -689,19 +698,19 @@ class Validator {
       $this->set_curr_message('is_alphanumeric', "The %s field contains invalid characters");
       return FALSE;
     }
-    
+
   }
-  
+
 	// -----------------------------------------------------------
 
   /**
    * Checks to see if a string is alphanumeric
-   * 
+   *
    * dashes and underscores allowed
    *
-   * @param string $str 
+   * @param string $str
    * @return boolean
-   */  
+   */
   public function is_alphanumdash($str) {
 
     if (preg_match("/^([a-zA-Z0-9_-]+)$/", $str) > 0)
@@ -710,22 +719,22 @@ class Validator {
     {
       $this->set_curr_message('is_alphanumdash', "The %s field contains invalid characters");
       return FALSE;
-    }    
-    
+    }
+
   }
-  
+
 	// -----------------------------------------------------------
-  
+
   /**
    * Checks to see if a string is alphanumeric
-   * 
+   *
    * dashes, underscores, and spaces allowed
    *
-   * @param string $str 
+   * @param string $str
    * @return boolean
-   */    
+   */
   public function is_alphanumdashspace($str) {
- 
+
     if (preg_match("/^([a-zA-Z0-9 _\-]+)$/", $str) > 0)
       return TRUE;
     else
@@ -734,7 +743,7 @@ class Validator {
       return FALSE;
     }
   }
-  
+
 }
 
 /* EOF: validator.php */
