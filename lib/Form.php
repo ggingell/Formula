@@ -247,13 +247,13 @@ class Form implements \IteratorAggregate {
 
       if ($field instanceof Fields\Abstracts\Input) {
         $valLabel = $field->validationLabel ?: $field->label;
-        $this->val->set_rules($field->name, $field->getData(), $valLabel, $field->validation);
+        $this->val->setRules($field->name, $field->getData(), $valLabel, $field->validation);
       }
     }
 
     //Run it!
     $result = $this->val->run();
-    $valErrors = $this->val->get_error_messages();
+    $valErrors = $this->val->getErrorMessages();
 
     //Update the field validation errors
     foreach($toValidate as $fkey => $field) {
@@ -286,12 +286,12 @@ class Form implements \IteratorAggregate {
     switch($format) {
 
       case self::AS_ARRAY:
-        return $this->val->get_error_messages(TRUE);
+        return $this->val->getErrorMessages(TRUE);
       break;
 
 
       case self::AS_ARRAY_BY_FIELD:
-        return $this->val->get_error_messages(FALSE);
+        return $this->val->getErrorMessages(FALSE);
       break;
 
 
@@ -299,7 +299,7 @@ class Form implements \IteratorAggregate {
       default:
 
         $msgs = array();
-        foreach($this->val->get_error_messages(TRUE) as $msg) {
+        foreach($this->val->getErrorMessages(TRUE) as $msg) {
           $msgs[] = sprintf("<li class='validation_error'>%s</li>", $msg);
         }
         $msgs = sprintf("<ul class='validation_errors'>%s</ul>", implode("\n", $msgs));
