@@ -4,12 +4,24 @@ namespace Formula\Fields;
 
 class Radios extends Abstracts\MultipleChoiceInput {
 
+  // -----------------------------------------------------------
+
+  /**
+   * Overrides parent::getDataKeys().
+   *
+   * @return array
+   */
   public function getDataKeys() {
     return array_merge(parent::getDataKeys(), array($this->name . '_other_input'));
   }
 
   // -----------------------------------------------------------
 
+  /**
+   * Overrides parent::getDataKeys().
+   *
+   * @return string
+   */
   public function getData() {
     if ($this->allowOther && $this->_data[$this->name] == '_other') {
       return $this->_data[$this->name . '_other_input'];
@@ -38,7 +50,7 @@ class Radios extends Abstracts\MultipleChoiceInput {
     }
 
     //Output the HTML
-    $optionsHtml = ($this->label) ? "<label class='multchoice_label'>{$this->label}</label>" : '';
+    $optionsHtml = ($this->label) ? sprintf(self::$multipleChoiceLabelHtml, $this->label) : '';
     if (is_array($this->options)) {
       foreach($this->options as $optkey => $optvalue) {
 

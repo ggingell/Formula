@@ -4,6 +4,10 @@ namespace Formula\Fields\Abstracts;
 
 abstract class Input extends Field {
 
+  public static $errorMsgHtml = "<span class='input_error_msg'>%s</span>";
+
+  // -----------------------------------------------------------
+
   /**
    * @var array  Validation Rules
    */
@@ -93,7 +97,7 @@ abstract class Input extends Field {
 
       $valErrorHtml = "";
       foreach($this->validationErrors as $error) {
-        $valErrorHtml .= "<span class='input_error_msg'>{$error}</span>";
+        $valErrorHtml .= sprintf(self::$errorMsgHtml, $error);
       }
 
       $this->after = $valErrorHtml . $this->after;

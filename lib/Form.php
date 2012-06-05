@@ -8,7 +8,7 @@ namespace Formula;
  * @package Formula
  * @author Casey McLaughlin
  */
-class Form {
+class Form implements \IteratorAggregate {
 
   const AS_ARRAY = 1;
   const AS_ARRAY_BY_FIELD = 2;
@@ -65,36 +65,26 @@ class Form {
   // -----------------------------------------------------------
 
   /**
-   * Set Magic Method
+   * Add a field to the form
    *
-   * @param string $item
-   * @param Fields\Abstracts\Field $val
+   * @param string $fieldname
+   * @param string $type
    */
-  public function __set($item, $val) {
+  public function addField($fieldname, $type) {
 
-    if ($val instanceOf Fields\Abstracts\Field) {
+    $className = "\\Formula\\Fields\\" . ucfirst($type);
+    $this->data->$fieldname = new $className($fieldname, $this->name);
 
-      //Set the name - Absolutely required
-      $val->name = $item;
+    //Set the POST data
+    if ($this->data->$fieldname instanceOf Fields\Abstracts\Input) {
 
-      //Set the POST data
-      if ($val instanceOf Fields\Abstracts\Input && isset($_POST[$item])) {
+      foreach($this->data->$fieldname->getDataKeys() as $datakey) {
 
-        foreach($val->getDataKeys() as $datakey) {
-          if (isset($_POST[$datakey])) {
-            $val->setData($datakey, $_POST[$datakey]);
-          }
+        if (isset($_POST[$datakey])) {
+          $this->data->$fieldname->setData($datakey, $_POST[$datakey]);
         }
-
       }
-
-      //Add it to the form
-      $this->data->$item = $val;
     }
-    else {
-      throw new \InvalidArgumentException("$item is not a valid Fieldtype object!");
-    }
-
   }
 
   // -----------------------------------------------------------
@@ -113,6 +103,16 @@ class Form {
     else {
       return $this->data->$item;
     }
+
+  }
+
+  // -----------------------------------------------------------
+
+  /**
+   * Iterator Interface for the Form
+   */
+  public function getIterator() {
+    return new ArrayObject($this->data);
   }
 
   // -----------------------------------------------------------

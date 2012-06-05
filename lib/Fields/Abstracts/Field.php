@@ -4,6 +4,12 @@ namespace Formula\Fields\Abstracts;
 
 abstract class Field {
 
+  public static $beforeWrapperHtml = "<span class='before'>%s</span>"; //after code
+  public static $afterWrapperHtml  = "<span class='after'>%s</span>";  //before code
+  public static $fieldWrapperHtml  = "<div class='%s'>%s</div>";       //classes, and then inner HTML
+
+  // -----------------------------------------------------------
+
   /**
    * @var string
    */
@@ -62,15 +68,17 @@ abstract class Field {
   /**
    * Constructor
    *
-   * @param array|string $data  Typically, existing
+   * @param string $name
+   * @param string $formId
    */
-  public function __construct($name = NULL, $data = NULL, $formId = 'form') {
+  public function __construct($name, $formId = 'form') {
 
     $this->type    = strtolower(get_called_class());
     $this->name    = $name;
     $this->formId = $formId;
 
-    $this->id = $formId . '_' . $name;
+    //Set the id
+    $this->id = $formId . '_' . $this->name;
   }
 
   // ------------------------------------------------------------
@@ -97,8 +105,8 @@ abstract class Field {
     $html = $this->render();
 
     //Before and after HTML
-    $before = $this->before ? "<span class='before'>$this->before</span>" : NULL;
-    $after = $this->after ? "<span class='after'>$this->after</span>" : NULL;
+    $before = $this->before ? sprintf(self::$beforeWrapperHtml, $this->before) : NULL;
+    $after = $this->after ? sprintf(self::$afterWrapperHtml, $this->after) : NULL;
 
     if ( ! is_array($classes)) {
       $classes = (is_null($classes)) ? array() : explode(' ', $classes);
@@ -109,7 +117,7 @@ abstract class Field {
 
     //Render!
     $html = $before . $html . $after;
-    $html = "<div class='" . implode(' ', $classes) . "'>" . $html . "</div>";
+    $html = sprintf(self::$fieldWrapperHtml, implode(' ', $classes), $html);
     return $html;
   }
 

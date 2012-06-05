@@ -4,6 +4,35 @@ namespace Formula\Fields;
 
 class Dropdown extends Abstracts\MultipleChoiceInput {
 
+  // -----------------------------------------------------------
+
+  /**
+   * Overrides parent::getDataKeys().
+   *
+   * @return array
+   */
+  public function getDataKeys() {
+    return array_merge(parent::getDataKeys(), array($this->name . '_other_input'));
+  }
+
+  // -----------------------------------------------------------
+
+  /**
+   * Overrides parent::getDataKeys().
+   *
+   * @return string
+   */
+  public function getData() {
+    if ($this->allowOther && $this->_data[$this->name] == '_other') {
+      return $this->_data[$this->name . '_other_input'];
+    }
+    else {
+      return parent::getData();
+    }
+  }
+
+  // -----------------------------------------------------------
+
   protected function render() {
 
     $attrs = $this->getAttrs();
@@ -23,39 +52,50 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
     }
 
     //Flag
-    $optchecked = FALSE;
+    $itemSelected = FALSE;
 
-    //Output the HTML
-
-    $optionsHtml = ($this->label) ? "<label class='multchoice_label'>{$this->label}</label>" : '';
+    //Add the options
+    $optionsArray = array();
     if (is_array($this->options)) {
-      foreach($this->options as $optkey => $optvalue) {
 
-        $currval = ($this->useValues) ? $optvalue : $optkey;
-        $checked = (strcmp($val, $currval) == 0) ? "checked='checked'" : NULL;
-        $optchecked = TRUE;
+      foreach($this->options as $key => $val) {
 
-        $optHtml = '';
-        $optHtml .= "<input type='radio' name='{$this->name}' id='{$this->id}_{$optkey}' value='{$currval}' {$checked} />";
-        $optHtml .= "<label class='radio_label' for='{$this->id}_{$optkey}'>{$optvalue}</label>";
-        $optionsHtml .= "<span class='radio_opt'>{$optHtml}</span>";
+        $currval  = ($this->useValues) ? $val : $key;
+        $selected = (strcmp($val, $currval) == 0) ? "selected='selected'" : NULL;
+        $itemSelected = (boolean) $selected;
+
+        if (is_array($val)) {
+
+          $currval  = ($this->useValues) ? $v : $k;
+          $selected = (strcmp($val, $currval) == 0) ? "selected='selected'" : NULL;
+
+          foreach($val as $k => $v) {
+            $subOptArray[] = "<option id='{$this->name}_{$k}' value='{$currval}' {$selected}>{$val}</option>";
+          }
+
+          $optionsArray[] = "<optgroup id='{$this->name}_{$key}'>" . implode("\n", $subOptArray) . "</optgroup>";
+        }
+        else {
+          $optionsArray[] = "<option id='{$this->name}_{$key}' value='{$currval}' {$selected}>{$val}</option>";
+        }
       }
     }
 
+    $optionsHtml = implode("\n", $optionsArray);
+
     //Add 'other' logic if enabled
     if ($this->allowOther) {
-
-      $checked = ($val && ! $optchecked) ? "checked='checked'" : NULL;
-      $currval = ($val && ! $optchecked) ? $val : NULL;
+      $checked = ($val == '_other') ? "checked='checked'" : NULL;
+      $val = $this->_data[$this->name . '_other_input'];
 
       $optHtml = '';
-      $optHtml .= "<input type='radio' name='{$this->name}' id='{$this->id}__other' value='_other' {$checked} />";
-      $optHtml .= "<label class='radio_label' for='{$this->id}__other'>{$this->otherLabel}</label>";
-      $optHtml .= "<input type='text' class='radio_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$currval}' />";
-      $optionsHtml .= "<span class='radio_opt'>{$optHtml}</span>";
+      $optHtml .= "<label class='dropdown_other_label' for='{$this->id}_other_input'>{$this->otherLabel}</label>";
+      $optHtml .= "<input type='text' class='dropdown_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' />";
+      $optionsHtml .= $optHtml;
     }
 
-    $optionsHtml = "<div " . $this->renderAttrs($attrs) . ">{$optionsHtml}</div>";
+    $labelHtml   = sprintf("<label for='%s'>%s</label>", $attrs['id'], $this->label);
+    $optionsHtml = "<select " . $this->renderAttrs($attrs) . ">{$labelHtml}{$optionsHtml}</select>";
 
     return $optionsHtml;
   }

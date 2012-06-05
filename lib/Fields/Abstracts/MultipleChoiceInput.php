@@ -4,6 +4,8 @@ namespace Formula\Fields\Abstracts;
 
 abstract class MultipleChoiceInput extends Input {
 
+	public static $multipleChoiceLabelHtml = "<label class='multchoice_label'>%s</label>"; //Label Text
+
 	/**
 	 * Associative array
 	 *
