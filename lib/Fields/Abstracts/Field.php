@@ -4,9 +4,10 @@ namespace Formula\Fields\Abstracts;
 
 abstract class Field {
 
-  public static $beforeWrapperHtml = "<span class='before'>%s</span>"; //after code
-  public static $afterWrapperHtml  = "<span class='after'>%s</span>";  //before code
-  public static $fieldWrapperHtml  = "<div class='%s'>%s</div>";       //classes, and then inner HTML
+  public static $beforeWrapperHtml      = "<span class='before'>%s</span>";      //after code
+  public static $descriptionWrapperHtml = "<span class='description'>%s</span>"; //description code
+  public static $afterWrapperHtml       = "<span class='after'>%s</span>";       //before code
+  public static $fieldWrapperHtml       = "<div class='%s'>%s</div>";            //classes, and then inner HTML
 
   // -----------------------------------------------------------
 
@@ -105,8 +106,9 @@ abstract class Field {
     $html = $this->render();
 
     //Before and after HTML
-    $before = $this->before ? sprintf(self::$beforeWrapperHtml, $this->before) : NULL;
-    $after = $this->after ? sprintf(self::$afterWrapperHtml, $this->after) : NULL;
+    $before      = $this->before ? sprintf(self::$beforeWrapperHtml, $this->before) : NULL;
+    $after       = $this->after ? sprintf(self::$afterWrapperHtml, $this->after) : NULL;
+    $description = $this->description ? sprintf(self::$descriptionWrapperHtml, $this->description) : NULL;
 
     if ( ! is_array($classes)) {
       $classes = (is_null($classes)) ? array() : explode(' ', $classes);
@@ -116,7 +118,7 @@ abstract class Field {
     $classes[] = "{$this->formId}_{$this->name}";
 
     //Render!
-    $html = $before . $html . $after;
+    $html = $before . $html . $after . $description;
     $html = sprintf(self::$fieldWrapperHtml, implode(' ', $classes), $html);
     return $html;
   }

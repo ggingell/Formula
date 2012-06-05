@@ -73,7 +73,7 @@ class Radios extends Abstracts\MultipleChoiceInput {
       $optHtml = '';
       $optHtml .= "<input type='radio' name='{$this->name}' id='{$this->id}__other' value='_other' {$checked} />";
       $optHtml .= "<label class='radio_label' for='{$this->id}__other'>{$this->otherLabel}</label>";
-      $optHtml .= "<input type='text' class='radio_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' />";
+      $optHtml .= "<input type='text' class='radio_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' placeholder='{$this->otherPlaceholder}' />";
       $optionsHtml .= "<span class='radio_opt'>{$optHtml}</span>";
     }
 

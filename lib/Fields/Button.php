@@ -29,13 +29,7 @@ class Button extends Abstracts\Input {
     if ($this->_data)
       $attrs['value'] = $this->_data[$this->name];
 
-    if ($this->label) {
-      $label_html = "<label for='{$this->id}'>{$this->label}</label>";
-    }
-    else {
-      $label_html = '';
-    }
-
+    $label_html = ($this->label) ? sprintf(self::$labelHtml, $this->id, $this->label) : NULL;
     $item_html = "<button ". $this->renderAttrs($attrs) .">" . $this->title . "</button>";
 
     return "$label_html $item_html";

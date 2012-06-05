@@ -5,6 +5,7 @@ namespace Formula\Fields\Abstracts;
 abstract class Input extends Field {
 
   public static $errorMsgHtml = "<span class='input_error_msg'>%s</span>";
+  public static $labelHtml    = "<label for='%s'>%s</label>";
 
   // -----------------------------------------------------------
 

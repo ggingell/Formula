@@ -22,7 +22,7 @@ class Textbox extends Abstracts\OpenEndedInput {
     if ($this->placeholder)
       $attrs['placeholder'] = $this->placeholder;
 
-    $label_html = "<label for='{$this->id}'>{$this->label}</label>";
+    $label_html = ($this->label) ? sprintf(self::$labelHtml, $this->id, $this->label) : NULL;
     $item_html = "<textarea ". $this->renderAttrs($attrs) .">" . $tfValue . "</textarea>";
 
     return "$label_html $item_html";

@@ -93,7 +93,7 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
       $otherHtml .= "<input type='text' class='dropdown_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' placeholder='{$this->otherPlaceholder}' />";
     }
 
-    $labelHtml   = sprintf("<label for='%s'>%s</label>", $attrs['id'], $this->label);
+    $labelHtml = ($this->label) ? sprintf(self::$labelHtml, $this->id, $this->label) : NULL;
     $optionsHtml = $labelHtml . "<select " . $this->renderAttrs($attrs) . ">{$optionsHtml}</select>" . $otherHtml;
 
     return $optionsHtml;

@@ -2,19 +2,26 @@
 
 namespace Formula\Fields;
 
-class File extends Abstracts\Input {
+class Password extends Abstracts\OpenEndedInput {
 
- protected function render() {
+  /**
+   * @var boolean
+   */
+  public $refill = FALSE;
+
+  // -----------------------------------------------------------
+
+  protected function render() {
 
     $attrs = $this->getAttrs();
     $attrs['name'] = $this->name;
-    $attrs['type'] = 'file';
+    $attrs['type'] = 'password';
     $attrs['class'] = $this->classes;
     $attrs['id'] = $this->id;
 
     if ($this->defaultValue)
       $attrs['value'] = $this->defaultValue;
-    if ($this->_data)
+    if ($this->_data && $this->refill)
       $attrs['value'] = $this->_data[$this->name];
 
     $label_html = ($this->label) ? sprintf(self::$labelHtml, $this->id, $this->label) : NULL;
@@ -25,4 +32,4 @@ class File extends Abstracts\Input {
 
 }
 
-/* EOF: File.php */
+/* EOF: Password.php */
