@@ -23,7 +23,7 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
    * @return string
    */
   public function getData() {
-    if ($this->allowOther && $this->_data[$this->name] == '_other') {
+    if ($this->allowOther && ! in_array($this->_data[$this->name], $this->options)) {
       return $this->_data[$this->name . '_other_input'];
     }
     else {
@@ -84,18 +84,17 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
     $optionsHtml = implode("\n", $optionsArray);
 
     //Add 'other' logic if enabled
+    $otherHtml = '';
     if ($this->allowOther) {
       $checked = ($val == '_other') ? "checked='checked'" : NULL;
       $val = $this->_data[$this->name . '_other_input'];
 
-      $optHtml = '';
-      $optHtml .= "<label class='dropdown_other_label' for='{$this->id}_other_input'>{$this->otherLabel}</label>";
-      $optHtml .= "<input type='text' class='dropdown_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' />";
-      $optionsHtml .= $optHtml;
+      $otherHtml .= "<label class='dropdown_other_label' for='{$this->id}_other_input'>{$this->otherLabel}</label>";
+      $otherHtml .= "<input type='text' class='dropdown_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' placeholder='{$this->otherPlaceholder}' />";
     }
 
     $labelHtml   = sprintf("<label for='%s'>%s</label>", $attrs['id'], $this->label);
-    $optionsHtml = "<select " . $this->renderAttrs($attrs) . ">{$labelHtml}{$optionsHtml}</select>";
+    $optionsHtml = $labelHtml . "<select " . $this->renderAttrs($attrs) . ">{$optionsHtml}</select>" . $otherHtml;
 
     return $optionsHtml;
   }

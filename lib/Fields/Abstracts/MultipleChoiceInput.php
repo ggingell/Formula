@@ -23,6 +23,11 @@ abstract class MultipleChoiceInput extends Input {
 	 */
 	public $otherLabel = 'Other';
 
+  /**
+   * @var string
+   */
+	public $otherPlaceholder = '';
+
 	/**
 	 * If TRUE, array keys in the $options will not be used
 	 * when submitting the form
