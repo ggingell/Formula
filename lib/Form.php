@@ -74,10 +74,21 @@ class Form {
 
     if ($val instanceOf Fields\Abstracts\Field) {
 
-      if ($val instanceOf Fields\Abstracts\Input && isset($_POST[$val->name])) {
-        $val->setData($_POST[$val->name]);
+      //Set the name - Absolutely required
+      $val->name = $item;
+
+      //Set the POST data
+      if ($val instanceOf Fields\Abstracts\Input && isset($_POST[$item])) {
+
+        foreach($val->getDataKeys() as $datakey) {
+          if (isset($_POST[$datakey])) {
+            $val->setData($datakey, $_POST[$datakey]);
+          }
+        }
+
       }
 
+      //Add it to the form
       $this->data->$item = $val;
     }
     else {
@@ -236,7 +247,7 @@ class Form {
 
       if ($field instanceof Fields\Abstracts\Input) {
         $valLabel = $field->validationLabel ?: $field->label;
-        $this->val->set_post_rules($field->name, $valLabel, $field->validation);
+        $this->val->set_rules($field->name, $field->getData(), $valLabel, $field->validation);
       }
     }
 

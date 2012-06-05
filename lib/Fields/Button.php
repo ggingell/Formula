@@ -27,7 +27,7 @@ class Button extends Abstracts\Input {
     if ($this->defaultValue)
       $attrs['value'] = $this->defaultValue;
     if ($this->_data)
-      $attrs['value'] = $this->_data;
+      $attrs['value'] = $this->_data[$this->name];
 
     if ($this->label) {
       $label_html = "<label for='{$this->id}'>{$this->label}</label>";

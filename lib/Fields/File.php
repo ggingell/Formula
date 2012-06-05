@@ -15,7 +15,7 @@ class File extends Abstracts\Input {
     if ($this->defaultValue)
       $attrs['value'] = $this->defaultValue;
     if ($this->_data)
-      $attrs['value'] = $this->_data;
+      $attrs['value'] = $this->_data[$this->name];
 
     $label_html = "<label for='{$this->id}'>{$this->label}</label>";
     $item_html = "<input ". $this->renderAttrs($attrs) ." />";

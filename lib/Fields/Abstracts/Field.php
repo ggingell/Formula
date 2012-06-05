@@ -64,7 +64,7 @@ abstract class Field {
    *
    * @param array|string $data  Typically, existing
    */
-  public function __construct($name, $data = NULL, $formId = 'form') {
+  public function __construct($name = NULL, $data = NULL, $formId = 'form') {
 
     $this->type    = strtolower(get_called_class());
     $this->name    = $name;
@@ -89,6 +89,10 @@ abstract class Field {
    * @return string
    */
   public function asHtml($classes = NULL) {
+
+    if ( ! $this->name) {
+      throw new \RuntimeException("Cannot render a field that does not have a name!");
+    }
 
     $html = $this->render();
 

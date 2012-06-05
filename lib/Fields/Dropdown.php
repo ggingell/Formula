@@ -13,7 +13,7 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
 
     //Determine the checked value, if possible
     if ($this->_data) {
-      $val = $this->_data;
+      $val = $this->_data[$this->name];
     }
     elseif ($this->defaultValue) {
       $val = $this->defaultValue;

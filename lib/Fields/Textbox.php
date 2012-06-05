@@ -15,7 +15,7 @@ class Textbox extends Abstracts\OpenEndedInput {
     if ($this->defaultValue)
       $tfValue = $this->defaultValue;
     if ($this->_data)
-      $tfValue = $this->_data;
+      $tfValue = $this->_data[$this->name];
     else
       $tfValue = '';
 
