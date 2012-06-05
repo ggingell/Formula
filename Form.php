@@ -64,6 +64,12 @@ class Form {
 
   // -----------------------------------------------------------
 
+  /**
+   * Set Magic Method
+   *
+   * @param string $item
+   * @param Fields\Abstracts\Field $val
+   */
   public function __set($item, $val) {
 
     if ($val instanceOf Fields\Abstracts\Field) {
@@ -82,6 +88,12 @@ class Form {
 
   // -----------------------------------------------------------
 
+  /**
+   * Get Magic Method
+   *
+   * @param string $item
+   * @return $mixed
+   */
   public function __get($item) {
 
     if ($item == 'name') {
