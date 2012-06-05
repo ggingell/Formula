@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file Textbox Field Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula\Fields;
 
 class Textbox extends Abstracts\OpenEndedInput {

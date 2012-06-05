@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file Validator Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula;
 
 /**

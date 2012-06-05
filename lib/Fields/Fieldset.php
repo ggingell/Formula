@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file Fieldset Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula\Fields;
 
 class Fieldset extends Abstracts\Field {

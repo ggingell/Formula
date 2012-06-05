@@ -1,12 +1,17 @@
 <?php
 
+/**
+ * @file Form Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula;
 
 /**
  * Form Class for Rendering and Validating
- *
- * @package Formula
- * @author Casey McLaughlin
  */
 class Form implements \IteratorAggregate {
 

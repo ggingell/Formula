@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file Password Field Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula\Fields;
 
 class Password extends Abstracts\OpenEndedInput {

@@ -10,11 +10,6 @@ abstract class Input extends Field {
   // -----------------------------------------------------------
 
   /**
-   * @var array  Validation Rules
-   */
-  public $validation = array();
-
-  /**
    * @var string  An optional alternative label to use for validation
    */
   public $validationLabel = NULL;
@@ -46,6 +41,11 @@ abstract class Input extends Field {
    * @var array
    */
   protected $_data = NULL;
+
+  /**
+   * @var array|string  Validation Rules
+   */
+  protected $validation = array();
 
   // -----------------------------------------------------------
 

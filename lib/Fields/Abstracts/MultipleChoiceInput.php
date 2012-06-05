@@ -16,17 +16,17 @@ abstract class MultipleChoiceInput extends Input {
 	/**
 	 * @var boolean
 	 */
-	public $allowOther;
+	public $allowOther = FALSE;
 
 	/**
 	 * @var string
 	 */
-	public $otherLabel = 'Other';
+	public $otherLabel;
 
   /**
    * @var string
    */
-	public $otherPlaceholder = '';
+	public $otherPlaceholder = 'Other';
 
 	/**
 	 * If TRUE, array keys in the $options will not be used
@@ -36,6 +36,29 @@ abstract class MultipleChoiceInput extends Input {
 	 */
 	public $useValues = FALSE;
 
+  // -----------------------------------------------------------
+
+	/**
+	 * Magic method to auto-add validation rules for multiple choice
+	 */
+  public function __get($item) {
+
+  	if ('validation' == $item && ! $this->allowOther) {
+
+  		//Auto-add the available options as isOneOf Validation
+  		$opts = ($this->useValues) ? array_values($this->options) : array_keys($this->options);
+  		$rule = "isOneOf[" . implode(';', $opts) . "]";
+
+  		if (is_array($this->validation)) {
+  			$this->validation[] = $rule;
+  		}
+  		else {
+  			$this->validation .= (strlen($this->validation) > 0) ? '|' . $rule : $rule;
+  		}
+  	}
+
+  	return parent::__get($item);
+  }
 }
 
 /* EOF: MultipleChoiceInput.php */

@@ -140,6 +140,24 @@ abstract class Field {
 
   // ------------------------------------------------------------
 
+  public function __set($item, $val) {
+    if ($item{0} != '_' && isset($this->$item)) {
+      $this->item = $val;
+    }
+  }
+
+  // ------------------------------------------------------------
+
+  public function __get($item) {
+
+    if ($item{0} != '_') {
+      return $this->$item;
+    }
+
+  }
+
+  // ------------------------------------------------------------
+
   /**
    * Alias for 'as_json'
    *

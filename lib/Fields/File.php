@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file File Field Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula\Fields;
 
 class File extends Abstracts\Input {

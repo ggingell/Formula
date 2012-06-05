@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file Radios Field Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula\Fields;
 
 class Radios extends Abstracts\MultipleChoiceInput {
