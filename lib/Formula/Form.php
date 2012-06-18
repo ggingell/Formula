@@ -71,7 +71,7 @@ class Form implements \IteratorAggregate {
 
   public function addFieldset($name, $legend = '') {
 
-    $this->data->$name = new Fieldset($name, $this->val);
+    $this->data->$name = new Fieldset($name, $this->val, $this->name);
     $this->data->$name->setLegend($legend);
 
   }
