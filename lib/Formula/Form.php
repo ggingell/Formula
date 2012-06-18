@@ -69,6 +69,15 @@ class Form implements \IteratorAggregate {
 
   // -----------------------------------------------------------
 
+  public function addFieldset($name, $legend = '') {
+
+    $this->data->$name = new Fieldset($name, $this->val);
+    $this->data->$name->setLegend($legend);
+
+  }
+
+  // -----------------------------------------------------------
+
   /**
    * Add a field to the form
    *
@@ -144,7 +153,7 @@ class Form implements \IteratorAggregate {
 
     $out = new \stdClass();
     $out->name = $this->name;
-    $out->fields = $this->data;
+    $out->fields = array_map(function($v) { return (string) $v; }, $this->data);
     return json_encode($out);
   }
 
@@ -250,7 +259,15 @@ class Form implements \IteratorAggregate {
         continue;
       }
 
-      if ($field instanceof Fields\Abstracts\Input) {
+      //Fieldsets
+      if ($field instanceof Fieldset) {
+        if ( ! $field->validate()) {
+          $res = FALSE;
+        }
+      }
+
+      //Regular fields
+      elseif ($field instanceof Fields\Abstracts\Input) {
         $valLabel = $field->validationLabel ?: $field->label;
         $this->val->setRules($field->name, $field->getData(), $valLabel, $field->validation);
       }
@@ -263,13 +280,12 @@ class Form implements \IteratorAggregate {
     //Update the field validation errors
     foreach($toValidate as $fkey => $field) {
       if (isset($valErrors[$field->name])) {
-
         $this->data->$fkey->validationErrors = $valErrors[$field->name];
-
       }
     }
 
-    return $result;
+    //Return TRUE or FALSE
+    return (isset($res) && $res == FALSE) ? $res : $result;
   }
 
   // -----------------------------------------------------------

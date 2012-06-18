@@ -37,24 +37,24 @@ abstract class MultipleChoiceInput extends Input {
 	public $useValues = FALSE;
 
   // -----------------------------------------------------------
-
-	/**
-	 * Magic method to auto-add validation rules for multiple choice
-	 */
+ 
+  /**
+   * Magic method to auto-add validation rules for multiple choice
+   */
   public function __get($item) {
 
   	if ('validation' == $item && ! $this->allowOther) {
 
-  		//Auto-add the available options as isOneOf Validation
-  		$opts = ($this->useValues) ? array_values($this->options) : array_keys($this->options);
-  		$rule = "isOneOf[" . implode(';', $opts) . "]";
+  	  //Auto-add the available options as isOneOf Validation
+  	  $opts = ($this->useValues) ? array_values($this->options) : array_keys($this->options);
+  	  $rule = "isOneOf[" . implode(';', $opts) . "]";
 
-  		if (is_array($this->validation)) {
-  			$this->validation[] = $rule;
-  		}
-  		else {
-  			$this->validation .= (strlen($this->validation) > 0) ? '|' . $rule : $rule;
-  		}
+  	  if (is_array($this->validation)) {
+  	    $this->validation[] = $rule;
+  	  }
+  	  else {
+  	    $this->validation .= (strlen($this->validation) > 0) ? '|' . $rule : $rule;
+  	  }
   	}
 
   	return parent::__get($item);

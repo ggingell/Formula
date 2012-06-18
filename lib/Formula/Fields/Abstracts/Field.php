@@ -165,7 +165,7 @@ abstract class Field {
    */
   public function __toString() {
 
-    return $this->as_json();
+    return $this->asJson();
 
   }
 

@@ -30,6 +30,11 @@ abstract class Input extends Field {
   public $refill = TRUE;
 
   /**
+   * @var array|string  Validation Rules
+   */
+  public $validation = '';
+
+  /**
    * @var boolean
    */
   public $renderValidationErrors = TRUE;
@@ -41,11 +46,6 @@ abstract class Input extends Field {
    * @var array
    */
   protected $_data = NULL;
-
-  /**
-   * @var array|string  Validation Rules
-   */
-  protected $validation = array();
 
   // -----------------------------------------------------------
 
@@ -77,7 +77,7 @@ abstract class Input extends Field {
   // -----------------------------------------------------------
 
   /**
-   * Get the dat for this field input
+   * Get the data for this field input
    */
   public function getData() {
     return (is_array($this->_data) && isset($this->_data[$this->name]))
