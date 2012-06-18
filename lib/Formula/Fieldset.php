@@ -16,8 +16,6 @@ class Fieldset extends Form {
 
   protected $val;
 
-  public $classes = '';
-
   public $renderValidationErrors = NULL;
 
   // -----------------------------------------------------------
@@ -40,9 +38,10 @@ class Fieldset extends Form {
   /**
    * Render the fieldset
    *
+   * @param $attrs
    * @return string
    */
-  public function render() {
+  public function asHtml($attrs = array()) {
 
     $html = '';
 
@@ -62,18 +61,30 @@ class Fieldset extends Form {
     }
 
     $legend = ($this->legend) ? sprintf("<legend>%s</legend>", $this->legend) : '';
-    return "<fieldset>" . $legend . $html . "</fieldset>";
+    $attrs  = ( ! empty($attrs)) ? ' ' . $this->prepAttrs($attrs) : '';
+
+    return "<fieldset{$attrs}>" . $legend . $html . "</fieldset>";
   }
 
   // -----------------------------------------------------------
 
   /**
-   * Alias for render() to make the interface more consistent
-   *
-   * @return string
+   * Render is a shortcut for asHtml, and it ignores the $action and $method
+   * attributes
    */
-  public function asHtml() {
-    return $this->render();
+  public function render($action = NULL, $method = 'POST', $attrs = array()) {
+    return $this->asHtml($attrs);
+  }
+
+  // -----------------------------------------------------------
+
+  public function prepAttrs($attrs) {
+
+    $outArr = array();
+    foreach($attrs as $k => $v) {
+      $outArr[] = "$k='$v'";
+    }
+    return implode(' ', $outArr);
   }
 
 }
