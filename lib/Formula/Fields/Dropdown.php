@@ -1,5 +1,13 @@
 <?php
 
+/**
+ * @file Dropdown Field Class
+ * @package Formula
+ * @author Casey McLaughlin
+ */
+
+// ---------------------------------------------------------------------------
+
 namespace Formula\Fields;
 
 class Dropdown extends Abstracts\MultipleChoiceInput {
