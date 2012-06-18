@@ -91,7 +91,7 @@ abstract class Input extends Field {
    *
    * @return string
    */
-  public function asHtml() {
+  public function asHtml($classes = NULL) {
 
     if (count($this->validationErrors) > 0 && $this->renderValidationErrors) {
       $class = 'input_error';
