@@ -87,23 +87,6 @@ class Validator {
 
   // -----------------------------------------------------------
 
-  //Do we need this?
-  /*public function add_rules($dataName, $rules = NULL) {
-
-    if ( ! is_array($rules))
-      $rules = explode("|", $rules);
-
-
-    if ( ! isset($this->validationRules[$dataName]))
-      throw new RuntimeException("Data $dataName not defined in Validator.  Use set_rules method before running add_rules");
-    else {
-      foreach($rules as $rule)
-        $this->validationRules[$dataName]->rules[] = $rule;
-    }
-  }*/
-
-  // -----------------------------------------------------------
-
   /**
    * Run validation on preset rules
    *
@@ -251,8 +234,8 @@ class Validator {
       $result = call_user_func_array(array($this, $function), $args);
     elseif (function_exists($function))
       $result = call_user_func_array($function, $args);
-    else //no validation rule; ignore...
-      $result = TRUE;
+    else
+      throw new \RuntimeException("The validation rule '$rule' does not exist!");
 
     //Clear Context
     $this->ruleContext = NULL;
