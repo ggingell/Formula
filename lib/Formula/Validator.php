@@ -261,6 +261,35 @@ class Validator {
   // -----------------------------------------------------------
 
   /**
+   * Run a callback that is not part of this class
+   *
+   * @param array|string $callback
+   * A PHP Callback
+   *
+   * @param array $args
+   * Array of arguments, including the data to be validated as the first arg
+   *
+   * @param string|null $ruleName
+   * Optional rulename.  If NULL, the callback will be used
+   */
+  private function runCallback($callback, $args, $ruleName = NULL) {
+
+    if (is_null($ruleName)) {
+      $ruleName = (string) $callback;
+    }
+
+    $result = call_user_func_array($callback, $args);
+
+    if ( ! $result) {
+      $this->setCurrMsg($ruleName, $ruleName . ' returned FALSE');
+    }
+
+    return $result;
+  }
+
+  // -----------------------------------------------------------
+
+  /**
    * Set current message for an error
    *
    * @param string $ruleName  The rule name to apply the message to
@@ -281,23 +310,6 @@ class Validator {
     $dataName = $this->fieldContext->dataName;
 
     $this->errorMessages[$dataName][$ruleName] = $message;
-  }
-
-  // -----------------------------------------------------------
-
-  private function runCallback($callback, $args, $ruleName = NULL) {
-
-    if (is_null($ruleName)) {
-      $ruleName = $callback;
-    }
-
-    $result = call_user_func_array($callback, $args);
-
-    if ( ! $result) {
-      $this->setCurrMsg($ruleName, $ruleName . ' returned FALSE');
-    }
-
-    return $result;
   }
 
   // -----------------------------------------------------------
