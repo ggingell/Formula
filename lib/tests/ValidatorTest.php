@@ -388,6 +388,53 @@ class ValidatorTest extends PHPUnit_Framework_TestCase {
     $this->fail("Non existent rule should have thrown a RuntimeException");
 
   }
+
+  public function testCallableSimpleFunctionRuns() {
+
+    $this->val->setRules('data1', 'abc', 'Data 1', 'isRequired|is_numeric');
+    $result = $this->val->run();
+    $this->assertArrayHasKey('is_numeric', $this->val->getErrorMessagesForField('data1'));
+  }
+
+  public function testCallableStaticCallbackRuns() {
+
+    $this->val->setRules('data1', 'abc', 'Data 1', 'isRequired|TestCallbackClass:staticTest');
+    $result = $this->val->run();
+    $this->assertArrayHasKey('TestCallbackClass:staticTest', $this->val->getErrorMessagesForField('data1'));
+
+  }
+
+  public function testCallableStaticCallbackWithArgsRuns() {
+
+    $this->val->setRules('data1', 'abc', 'Data 1', 'isRequired|TestCallbackClass:staticTestWithArgs[1]');
+    $this->assertTrue($this->val->run());
+
+    $this->val->setRules('data2', 'abcd', 'Data 2', 'isRequired|TestCallbackClass:staticTestWithArgs[0]');
+    $result = $this->val->run();
+    $this->assertArrayHasKey('TestCallbackClass:staticTestWithArgs', $this->val->getErrorMessagesForField('data2'));
+  }
+
+  public function demonstrateCallbackSyntax() {
+
+    //First rule is a standard rule inside the validation class
+    //Second rule is a function callback from PHP standard library
+    //Third rule is a full PHP callback with optional arguments defined
+    //$this->val->setRules('data1', 'abc', 'Data 1', 'isRequired|is_numeric|classOrObj:method[args,here]')
+  }
+}
+
+// ==========================================================================
+
+class TestCallbackClass {
+
+  public static function staticTest($str) {
+    return false;
+  }
+
+  public static function staticTestWithArgs($str, $trueOrFalse) {
+    return (boolean) $trueOrFalse;
+  }
+
 }
 
 /* EOF: ValidatorTest.php */

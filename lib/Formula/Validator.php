@@ -216,26 +216,41 @@ class Validator {
    */
   private function runRule($rule, $value) {
 
-    $regex = "^([a-zA-Z0-9\-_]+)(\[([a-zA-Z0-9\-_\s:;,]+?)\])?$";
+    $regex = "^([a-zA-Z0-9\-_:]+)(\[([a-zA-Z0-9\-_\s:;,]+?)\])?$";
     preg_match("/$regex/", $rule, $matches);
 
-    //Extract the function and the arguments
-    $function = (isset($matches[1])) ? $matches[1] : FALSE;
+    //Extract the callback name
+    $callback = (isset($matches[1])) ? $matches[1] : FALSE;
 
+    //Extract the arguments
     $args = (isset($matches[3])) ? $matches[3] : '';
-    $args = array_filter(array_map('trim', explode(',', $args)));
+    $args = array_filter(
+      array_map('trim', explode(',', $args)),
+      function($v) { return ($v !== ''); }
+    );
+
+    //Add the actual value to the front of the args array
     array_unshift($args, $value);
 
     //Set Context
-    $this->ruleContext = $function;
+    $this->ruleContext = $callback;
 
     //Run it
-    if (method_exists($this, $function))
-      $result = call_user_func_array(array($this, $function), $args);
-    elseif (function_exists($function))
-      $result = call_user_func_array($function, $args);
-    else
+    if (method_exists($this, $callback)) {
+      $result = call_user_func_array(array($this, $callback), $args);
+    }
+    elseif (is_callable($callback)) {
+      $result = $this->runCallback($callback, $args);
+    }
+    elseif (strpos($callback, ':') !== FALSE) {      
+      list($classOrObj, $method) = explode(':', $callback, 2);
+      $result = $this->runCallback(array($classOrObj, $method), $args, $callback);
+    }
+
+    //If nothing was run...
+    if ( ! isset($result)) {
       throw new \RuntimeException("The validation rule '$rule' does not exist!");
+    }
 
     //Clear Context
     $this->ruleContext = NULL;
@@ -266,6 +281,23 @@ class Validator {
     $dataName = $this->fieldContext->dataName;
 
     $this->errorMessages[$dataName][$ruleName] = $message;
+  }
+
+  // -----------------------------------------------------------
+
+  private function runCallback($callback, $args, $ruleName = NULL) {
+
+    if (is_null($ruleName)) {
+      $ruleName = $callback;
+    }
+
+    $result = call_user_func_array($callback, $args);
+
+    if ( ! $result) {
+      $this->setCurrMsg($ruleName, $ruleName . ' returned FALSE');
+    }
+
+    return $result;
   }
 
   // -----------------------------------------------------------
