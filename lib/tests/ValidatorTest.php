@@ -374,6 +374,20 @@ class ValidatorTest extends PHPUnit_Framework_TestCase {
     $this->assertArrayHasKey('data2', $this->val->getErrorMessages());
     $this->assertArrayHasKey('data3', $this->val->getErrorMessages());
   }
+
+  public function testNonExistentRuleThrowsException() {
+
+    $this->val->setRules('data1', 'Hello World!', 'Data 1', 'nonExistentRule|isRequired');
+
+    try {
+      $this->val->run();
+    } catch (RuntimeException $e) {
+      return;
+    }
+
+    $this->fail("Non existent rule should have thrown a RuntimeException");
+
+  }
 }
 
 /* EOF: ValidatorTest.php */

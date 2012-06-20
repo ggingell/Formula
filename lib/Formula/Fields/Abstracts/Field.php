@@ -74,7 +74,10 @@ abstract class Field {
    */
   public function __construct($name, $formId = 'form') {
 
-    $this->type    = strtolower(get_called_class());
+    $classBaseName = explode("\\", strtolower(get_called_class()));
+    $classBaseName = end($classBaseName);
+
+    $this->type    = $classBaseName;
     $this->name    = $name;
     $this->formId = $formId;
 
