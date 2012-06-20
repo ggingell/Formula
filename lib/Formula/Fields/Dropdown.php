@@ -43,8 +43,11 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
 
   protected function render() {
 
+    //Other? Add special class
+    $this->classes .= ' has_other';
+
     $attrs = $this->getAttrs();
-    $attrs['class'] = $this->classes;
+    $attrs['class'] = trim($this->classes);
     $attrs['name'] = $this->name;
     $attrs['id'] = $this->id;
 
@@ -97,7 +100,9 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
       $checked = ($val == '_other') ? "checked='checked'" : NULL;
       $val = $this->_data[$this->name . '_other_input'];
 
-      $otherHtml .= "<label class='dropdown_other_label' for='{$this->id}_other_input'>{$this->otherLabel}</label>";
+      if ($this->otherLabel) {
+        $otherHtml .= sprintf("<label class='dropdown_other_label' for='%s_other_input'>%s</label>", $this->id, $this->otherLabel);
+      }
       $otherHtml .= "<input type='text' class='dropdown_other' id='{$this->id}__other_input' name='{$this->name}_other_input' value='{$val}' placeholder='{$this->otherPlaceholder}' />";
     }
 
