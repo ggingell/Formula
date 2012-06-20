@@ -637,9 +637,10 @@ class Validator {
    *
    * @param string $str
    * @param string $val
+   * @param string $valName  Optional
    * @return boolean
    */
-  public function isExactly($str, $val) {
+  public function isExactly($str, $val, $valName = NULL) {
 
     if (is_array($str) OR is_object($str))
       $str = serialize($str);
@@ -653,7 +654,8 @@ class Validator {
       return TRUE;
     }
     else {
-      $this->setCurrMsg('isExactly', "The %s field must match '$val'");
+      $valName = $valName ?: "'" . $val . "'";
+      $this->setCurrMsg('isExactly', "The %s field must match $valName");
       return FALSE;
     }
 
