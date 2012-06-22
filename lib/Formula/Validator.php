@@ -79,7 +79,7 @@ class Validator {
       'name'  => $dataName,
       'data'  => $data,
       'label' => $label ?: $dataName,
-      'rules'  => (is_array($rules) ? $rules : explode("|", $rules))
+      'rules'  => array_filter(is_array($rules) ? $rules : explode("|", $rules))
     );
 
     $this->validationRules[$dataName] = $rule;
