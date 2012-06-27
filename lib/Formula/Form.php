@@ -211,6 +211,7 @@ class Form implements \IteratorAggregate {
     if ($action !== FALSE) {
 
       $attributes = array();
+      $attributes['id'] = $this->name;
       $attributes['action'] = $action ?: '';
       $attributes['method'] = strtolower($method ?: 'POST');
       $attributes['enctype'] = ($hasFiles) ? 'multipart/form-data' : 'application/x-www-form-urlencoded';
