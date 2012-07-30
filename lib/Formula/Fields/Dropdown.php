@@ -43,10 +43,14 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
 
   protected function render() {
 
+    // Add special class if needed
+    $this->classes .= ($this->allowOther) ? ' has_other' : '';
+
     $attrs = $this->getAttrs();
     $attrs['class'] = trim($this->classes);
     $attrs['name'] = $this->name;
     $attrs['id'] = $this->id;
+
 
     //Determine the checked value, if possible
     if ($this->_data) {
@@ -58,6 +62,7 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
     else {
       $val = NULL;
     }
+
 
     //Flag
     $itemSelected = FALSE;
@@ -94,10 +99,6 @@ class Dropdown extends Abstracts\MultipleChoiceInput {
     //Add 'other' logic if enabled
     $otherHtml = '';
     if ($this->allowOther) {
-
-      // Add special class
-      $this->classes .= ' has_other';
-
       $checked = ($val == '_other') ? "checked='checked'" : NULL;
       $val = $this->_data[$this->name . '_other_input'];
 
