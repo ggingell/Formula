@@ -20,15 +20,19 @@ class Textbox extends Abstracts\OpenEndedInput {
     $attrs['class'] = $this->classes;
     $attrs['id'] = $this->id;
 
-    if ($this->defaultValue)
-      $tfValue = $this->defaultValue;
-    if ($this->_data)
-      $tfValue = $this->_data[$this->name];
-    else
-      $tfValue = '';
+    if ($this->defaultValue != '') {
+        $tfValue = $this->defaultValue;
+    }
+    elseif ($this->_data) {
+        $tfValue = $this->_data[$this->name];
+    }
+    else {
+        $tfValue = '';
+    }
 
-    if ($this->placeholder)
-      $attrs['placeholder'] = $this->placeholder;
+    if ($this->placeholder) {
+        $attrs['placeholder'] = $this->placeholder;
+    }
 
     $label_html = ($this->label) ? sprintf(self::$labelHtml, $this->id, $this->label) : NULL;
     $item_html = "<textarea ". $this->renderAttrs($attrs) .">" . $tfValue . "</textarea>";
